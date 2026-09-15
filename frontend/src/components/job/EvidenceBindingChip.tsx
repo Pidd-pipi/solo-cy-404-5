@@ -15,6 +15,8 @@ export function EvidenceBindingChip({ binding, resumes, onUnbind }: EvidenceBind
 
   return (
     <span
+      data-testid="binding-chip"
+      data-orphan={orphan ? 'true' : 'false'}
       className={`inline-flex max-w-full items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs ${
         orphan
           ? 'border-[var(--danger)]/40 bg-[var(--danger)]/10 text-[var(--danger)]'
@@ -38,6 +40,7 @@ export function EvidenceBindingChip({ binding, resumes, onUnbind }: EvidenceBind
       <button
         type="button"
         aria-label="解绑该证据"
+        data-testid="binding-unbind"
         onClick={onUnbind}
         className="shrink-0 rounded-sm opacity-60 hover:opacity-100"
       >

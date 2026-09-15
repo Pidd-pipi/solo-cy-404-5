@@ -93,6 +93,7 @@ export function JobDetail() {
                 allowNull
                 nullLabel="未指定主投简历"
                 ariaLabel="主投简历"
+                testId="job-target-resume"
               />
               {job.targetResumeId !== null && !targetResumeExists ? (
                 <span className="text-sm font-semibold text-[var(--danger)]">主投简历已删除</span>
@@ -149,6 +150,7 @@ export function JobDetail() {
 
             <form className="mt-3 flex items-center gap-2" onSubmit={handleAddRequirement}>
               <input
+                data-testid="requirement-input"
                 className="min-w-0 flex-1 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)] placeholder:text-[var(--muted)]"
                 value={requirementDraft}
                 placeholder="添加岗位要求，例如：5 年以上 B 端产品经验，回车确认"

@@ -43,7 +43,7 @@ export function Jobs() {
             把目标岗位要求逐条绑定到简历里的工作、项目、技能或教育证据，跟踪覆盖完成度并完成投递前检查。
           </p>
         </div>
-        <Button icon={<Target size={16} aria-hidden />} variant="primary" onClick={() => setDialogOpen(true)}>
+        <Button icon={<Target size={16} aria-hidden />} variant="primary" onClick={() => setDialogOpen(true)} data-testid="create-job-button">
           新建岗位
         </Button>
       </div>

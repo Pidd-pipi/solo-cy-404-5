@@ -8,6 +8,7 @@ interface ResumeSelectProps {
   nullLabel?: string;
   ariaLabel?: string;
   className?: string;
+  testId?: string;
 }
 
 export function ResumeSelect({
@@ -18,6 +19,7 @@ export function ResumeSelect({
   nullLabel = '暂不指定',
   ariaLabel = '选择简历',
   className = '',
+  testId,
 }: ResumeSelectProps) {
   const targetMissing = value !== null && !resumes.some((resume) => resume.id === value);
 
@@ -26,6 +28,7 @@ export function ResumeSelect({
       className={`min-h-10 rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-semibold text-[var(--ink)] ${className}`}
       value={value ?? ''}
       aria-label={ariaLabel}
+      data-testid={testId}
       onChange={(event) => onChange(event.target.value || null)}
     >
       {allowNull ? <option value="">{nullLabel}</option> : null}

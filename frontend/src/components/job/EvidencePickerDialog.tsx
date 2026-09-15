@@ -152,6 +152,8 @@ export function EvidencePickerDialog({
                       type="button"
                       role="tab"
                       aria-selected={active}
+                      data-testid="picker-section-tab"
+                      data-section={item.id}
                       onClick={() => setSection(item.id)}
                       className={`rounded-md border px-3 py-1.5 text-xs font-semibold transition ${
                         active
@@ -179,6 +181,9 @@ export function EvidencePickerDialog({
                         <button
                           type="button"
                           disabled={bound}
+                          data-testid="picker-entry"
+                          data-entry-id={entry.id}
+                          data-bound={bound ? 'true' : 'false'}
                           onClick={() => handleSelect(entry.id)}
                           className={`flex w-full items-center justify-between gap-3 rounded-md border px-3 py-2.5 text-left text-sm transition ${
                             bound

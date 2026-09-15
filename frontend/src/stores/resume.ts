@@ -94,6 +94,13 @@ const storedResumes = readStorage<Resume[]>(storageKeys.resumes, []);
 const initialResumes = storedResumes.length > 0 ? storedResumes : [buildResume('atelier', '产品经理求职简历')];
 const initialActiveResumeId = readStorage<string | null>(storageKeys.activeResumeId, initialResumes[0]?.id ?? null);
 
+// 首次启动（本地无简历）时把种子数据立即落盘，
+// 否则用户直接进入岗位匹配等页面绑定预置简历后，刷新会因内存态丢失而失联。
+if (storedResumes.length === 0) {
+  writeStorage(storageKeys.resumes, initialResumes);
+  writeStorage(storageKeys.activeResumeId, initialActiveResumeId);
+}
+
 function persist(state: Pick<ResumeState, 'resumes' | 'activeResumeId'>): void {
   writeStorage(storageKeys.resumes, state.resumes);
   writeStorage(storageKeys.activeResumeId, state.activeResumeId);

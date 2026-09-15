@@ -35,14 +35,16 @@ npm run build
 npm run preview
 ```
 
-测试（Vitest + jsdom，走真实 localStorage 持久化，无内存替身）：
+测试（统一入口）：
 
 ```bash
-npm test          # 单次运行
-npm run test:watch # 监听模式
+npm test          # Vitest + jsdom：真实 localStorage，模块重载模拟刷新/重开
+npm run test:watch
+npm run e2e       # Playwright + 真实 Chromium：关闭页面重开、整浏览器重启、真实文件导入导出
 ```
 
-测试用例位于 `src/test/job-matching.test.ts`，每个用例通过清空 localStorage + 重新加载 store 模块自行隔离数据，覆盖：首次写入/刷新/重开、完整 JSON 备份往返、旧备份（缺少岗位数据）恢复且不丢简历、证据改名追踪、条目/来源简历移除失联、同名新条目不自动接管、复制简历后绑定独立、重复绑定去重、条目换序、投递前检查与覆盖率。
+- 单元/集成测试 `src/test/job-matching.test.ts`（13 类场景）：真实 localStorage 持久化，通过清空数据 + 重新加载 store 模块自行隔离，覆盖首次写入/刷新/重开、完整 JSON 备份往返、旧备份（缺少岗位数据）恢复且不丢简历、证据改名追踪、条目/来源简历移除失联、同名新条目不自动接管、复制简历后绑定独立、重复绑定去重、条目换序、投递前检查与覆盖率。
+- 端到端测试 `e2e/job-matching-persistence.spec.ts`：从真实页面入口写入岗位/要求/绑定/检查项，验证页面刷新、关闭页面重开、整浏览器重启（独立 BrowserContext + storageState）后覆盖率、失联状态与输入仍可回读；备份经真实「导出 JSON / 导入」文件往返；旧备份缺岗位数据时岗位为空、简历保留。运行前需 `npx playwright install chromium`。
 
 ## 技术栈
 

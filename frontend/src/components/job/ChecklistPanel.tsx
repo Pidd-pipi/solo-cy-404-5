@@ -38,7 +38,7 @@ export function ChecklistPanel({ jobId, checklist }: ChecklistPanelProps) {
     <section className="border border-[var(--border)] bg-[var(--surface)] p-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-display text-xl font-semibold text-[var(--ink)]">投递前检查</h2>
-        <span className="text-sm font-semibold text-[var(--accent-strong)]">
+        <span className="text-sm font-semibold text-[var(--accent-strong)]" data-testid="checklist-progress">
           {progress.done}/{progress.total}
         </span>
       </div>
@@ -50,6 +50,9 @@ export function ChecklistPanel({ jobId, checklist }: ChecklistPanelProps) {
         {checklist.map((check) => (
           <li
             key={check.id}
+            data-testid="check-item"
+            data-check-id={check.id}
+            data-status={check.status}
             className="group flex items-center gap-2.5 rounded-md border border-[var(--border)] px-3 py-2"
           >
             <button
@@ -57,6 +60,7 @@ export function ChecklistPanel({ jobId, checklist }: ChecklistPanelProps) {
               role="checkbox"
               aria-checked={check.status === 'done'}
               aria-label={check.status === 'done' ? '标记为未完成' : '标记为完成'}
+              data-testid="check-toggle"
               onClick={() => toggleCheck(jobId, check.id)}
               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition ${
                 check.status === 'done'

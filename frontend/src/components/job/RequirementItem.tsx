@@ -38,7 +38,7 @@ export function RequirementItem({
   };
 
   return (
-    <li className="border border-[var(--border)] bg-[var(--surface)] p-4">
+    <li className="border border-[var(--border)] bg-[var(--surface)] p-4" data-testid="requirement-item" data-requirement-id={requirement.id}>
       <div className="flex items-start gap-3">
         <span className={covered ? 'mt-0.5 text-[var(--accent)]' : 'mt-0.5 text-[var(--muted)]'}>
           {covered ? <CheckCircle2 size={18} aria-hidden /> : <CircleDashed size={18} aria-hidden />}
@@ -72,7 +72,7 @@ export function RequirementItem({
             </div>
           ) : (
             <div className="flex items-start justify-between gap-3">
-              <p className="text-sm font-semibold leading-6 text-[var(--ink)]">{requirement.text}</p>
+              <p className="text-sm font-semibold leading-6 text-[var(--ink)]" data-testid="requirement-text">{requirement.text}</p>
               <div className="flex shrink-0 items-center gap-1">
                 <button
                   type="button"
@@ -131,6 +131,7 @@ export function RequirementItem({
             <Button
               className="px-3 py-1.5 text-xs"
               icon={<Link2 size={13} aria-hidden />}
+              data-testid="bind-evidence"
               onClick={() => onBindEvidence(requirement)}
             >
               绑定证据

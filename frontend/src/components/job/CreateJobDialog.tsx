@@ -61,6 +61,7 @@ export function CreateJobDialog({ open, resumes, defaultResumeId, onClose, onSub
                 className={inputClass}
                 value={title}
                 placeholder="例如：高级产品经理"
+                data-testid="job-title-input"
                 onChange={(event) => setTitle(event.target.value)}
                 autoFocus
               />
@@ -71,6 +72,7 @@ export function CreateJobDialog({ open, resumes, defaultResumeId, onClose, onSub
                 className={inputClass}
                 value={company}
                 placeholder="例如：青松科技"
+                data-testid="job-company-input"
                 onChange={(event) => setCompany(event.target.value)}
               />
             </label>
@@ -84,6 +86,7 @@ export function CreateJobDialog({ open, resumes, defaultResumeId, onClose, onSub
                 nullLabel="暂不指定"
                 className="w-full"
                 ariaLabel="主投简历"
+                testId="job-create-resume-select"
               />
             </label>
             <label className="block space-y-1 text-sm font-medium text-[var(--ink)]">
@@ -92,12 +95,13 @@ export function CreateJobDialog({ open, resumes, defaultResumeId, onClose, onSub
                 className={`${inputClass} min-h-28 resize-y leading-6`}
                 value={description}
                 placeholder="粘贴岗位描述或记录投递备注"
+                data-testid="job-description-input"
                 onChange={(event) => setDescription(event.target.value)}
               />
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <Button onClick={onClose}>取消</Button>
-              <Button type="submit" variant="primary" disabled={!title.trim()}>
+              <Button type="submit" variant="primary" data-testid="job-create-submit" disabled={!title.trim()}>
                 创建岗位
               </Button>
             </div>
