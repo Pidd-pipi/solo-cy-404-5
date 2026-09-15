@@ -35,6 +35,15 @@ npm run build
 npm run preview
 ```
 
+测试（Vitest + jsdom，走真实 localStorage 持久化，无内存替身）：
+
+```bash
+npm test          # 单次运行
+npm run test:watch # 监听模式
+```
+
+测试用例位于 `src/test/job-matching.test.ts`，每个用例通过清空 localStorage + 重新加载 store 模块自行隔离数据，覆盖：首次写入/刷新/重开、完整 JSON 备份往返、旧备份（缺少岗位数据）恢复且不丢简历、证据改名追踪、条目/来源简历移除失联、同名新条目不自动接管、复制简历后绑定独立、重复绑定去重、条目换序、投递前检查与覆盖率。
+
 ## 技术栈
 
 | 分类 | 技术 |

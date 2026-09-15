@@ -1,12 +1,13 @@
 import { ChangeEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileJson, FilePlus2, Upload } from 'lucide-react';
-import { readWorkspaceSnapshot, writeWorkspaceSnapshot, WorkspaceSnapshot } from '../api/storage';
+import { readWorkspaceSnapshot, writeWorkspaceSnapshot } from '../api/storage';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
 import { ResumeCard } from '../components/common/ResumeCard';
 import { defaultProfile } from '../stores/profile';
 import { useResumeStore } from '../stores/resume';
+import { BackupParseError, parseWorkspaceBackup } from '../utils/backup';
 import { downloadJson, readJsonFile } from '../utils/storage';
 
 export function ResumeList() {
@@ -34,24 +35,16 @@ export function ResumeList() {
     }
     setImportError('');
     try {
-      const snapshot = await readJsonFile<Partial<WorkspaceSnapshot>>(file);
-      if (!snapshot || typeof snapshot !== 'object' || !Array.isArray(snapshot.resumes)) {
-        setImportError('导入失败：文件格式不正确，缺少简历数据。');
-        return;
-      }
-      // jobs 缺省时按空数组处理（兼容旧备份）；其余字段缺失时给出回退值
-      writeWorkspaceSnapshot({
-        exportedAt: snapshot.exportedAt ?? new Date().toISOString(),
-        resumes: snapshot.resumes,
-        activeResumeId: snapshot.activeResumeId ?? null,
-        profile: snapshot.profile ?? defaultProfile,
-        selectedTemplateId: snapshot.selectedTemplateId ?? 'atelier',
-        theme: snapshot.theme === 'dark' ? 'dark' : 'light',
-        jobs: snapshot.jobs,
-      });
+      const raw = await readJsonFile<unknown>(file);
+      const snapshot = parseWorkspaceBackup(raw);
+      writeWorkspaceSnapshot(snapshot);
       window.location.reload();
-    } catch {
-      setImportError('导入失败：JSON 解析错误，请确认文件未损坏。');
+    } catch (error) {
+      setImportError(
+        error instanceof BackupParseError
+          ? `导入失败：${error.message}`
+          : '导入失败：JSON 解析错误，请确认文件未损坏。',
+      );
     } finally {
       if (inputRef.current) {
         inputRef.current.value = '';
