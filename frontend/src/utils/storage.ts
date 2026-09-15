@@ -4,6 +4,7 @@ export const storageKeys = {
   profile: 'smart-resume:profile',
   template: 'smart-resume:selectedTemplateId',
   theme: 'smart-resume:theme',
+  jobs: 'smart-resume:jobs',
 } as const;
 
 const canUseStorage = () => typeof window !== 'undefined' && Boolean(window.localStorage);

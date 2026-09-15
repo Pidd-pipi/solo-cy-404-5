@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '../App';
 import { ExportPreview } from '../pages/ExportPreview';
+import { JobDetail } from '../pages/JobDetail';
+import { Jobs } from '../pages/Jobs';
 import { Profile } from '../pages/Profile';
 import { ResumeEditor } from '../pages/ResumeEditor';
 import { ResumeList } from '../pages/ResumeList';
@@ -15,6 +17,8 @@ export const router = createBrowserRouter([
       { path: 'resumes', element: <ResumeList /> },
       { path: 'resumes/:id/edit', element: <ResumeEditor /> },
       { path: 'resumes/:id/export', element: <ExportPreview /> },
+      { path: 'jobs', element: <Jobs /> },
+      { path: 'jobs/:id', element: <JobDetail /> },
       { path: 'templates', element: <TemplateGallery /> },
       { path: 'profile', element: <Profile /> },
       { path: '*', element: <Navigate replace to="/resumes" /> },

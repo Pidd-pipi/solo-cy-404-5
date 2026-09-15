@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileJson, FilePlus2, Upload } from 'lucide-react';
 import { readWorkspaceSnapshot, writeWorkspaceSnapshot, WorkspaceSnapshot } from '../api/storage';
@@ -12,6 +12,7 @@ import { downloadJson, readJsonFile } from '../utils/storage';
 export function ResumeList() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [importError, setImportError] = useState('');
   const resumes = useResumeStore((state) => state.resumes);
   const createResume = useResumeStore((state) => state.createResume);
   const duplicateResume = useResumeStore((state) => state.duplicateResume);
@@ -31,9 +32,31 @@ export function ResumeList() {
     if (!file) {
       return;
     }
-    const snapshot = await readJsonFile<WorkspaceSnapshot>(file);
-    writeWorkspaceSnapshot(snapshot);
-    window.location.reload();
+    setImportError('');
+    try {
+      const snapshot = await readJsonFile<Partial<WorkspaceSnapshot>>(file);
+      if (!snapshot || typeof snapshot !== 'object' || !Array.isArray(snapshot.resumes)) {
+        setImportError('导入失败：文件格式不正确，缺少简历数据。');
+        return;
+      }
+      // jobs 缺省时按空数组处理（兼容旧备份）；其余字段缺失时给出回退值
+      writeWorkspaceSnapshot({
+        exportedAt: snapshot.exportedAt ?? new Date().toISOString(),
+        resumes: snapshot.resumes,
+        activeResumeId: snapshot.activeResumeId ?? null,
+        profile: snapshot.profile ?? defaultProfile,
+        selectedTemplateId: snapshot.selectedTemplateId ?? 'atelier',
+        theme: snapshot.theme === 'dark' ? 'dark' : 'light',
+        jobs: snapshot.jobs,
+      });
+      window.location.reload();
+    } catch {
+      setImportError('导入失败：JSON 解析错误，请确认文件未损坏。');
+    } finally {
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
+    }
   };
 
   return (
@@ -58,6 +81,12 @@ export function ResumeList() {
         </div>
       </div>
 
+      {importError ? (
+        <p className="mt-4 rounded-md border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
+          {importError}
+        </p>
+      ) : null}
+
       {resumes.length === 0 ? (
         <div className="mt-8">
           <EmptyState
@@ -78,4 +107,3 @@ export function ResumeList() {
     </div>
   );
 }
-

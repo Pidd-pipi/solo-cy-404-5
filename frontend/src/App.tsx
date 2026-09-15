@@ -1,14 +1,16 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { FileText, IdCard, LayoutTemplate, MoonStar } from 'lucide-react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { FileText, IdCard, LayoutTemplate, MoonStar, Target } from 'lucide-react';
 import { ThemeToggle } from './components/common/ThemeToggle';
 
 const navItems = [
-  { to: '/resumes', label: '简历', icon: FileText },
-  { to: '/templates', label: '模板', icon: LayoutTemplate },
-  { to: '/profile', label: '个人资料', icon: IdCard },
+  { to: '/resumes', label: '简历', icon: FileText, match: (path: string) => path.startsWith('/resumes') },
+  { to: '/jobs', label: '岗位匹配', icon: Target, match: (path: string) => path.startsWith('/jobs') },
+  { to: '/templates', label: '模板', icon: LayoutTemplate, match: (path: string) => path.startsWith('/templates') },
+  { to: '/profile', label: '个人资料', icon: IdCard, match: (path: string) => path.startsWith('/profile') },
 ];
 
 export function AppLayout() {
+  const location = useLocation();
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--bg)]/95 backdrop-blur">
@@ -23,20 +25,23 @@ export function AppLayout() {
             </span>
           </NavLink>
           <nav className="hidden items-center gap-1 md:flex">
-            {navItems.map((item) => (
-              <NavLink
-                className={({ isActive }) =>
-                  `inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
-                    isActive ? 'bg-[var(--surface-strong)] text-[var(--ink-invert)]' : 'text-[var(--muted)] hover:bg-[var(--surface-alt)]'
-                  }`
-                }
-                key={item.to}
-                to={item.to}
-              >
-                <item.icon size={16} aria-hidden />
-                {item.label}
-              </NavLink>
-            ))}
+            {navItems.map((item) => {
+              const active = item.match(location.pathname);
+              return (
+                <NavLink
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-sm font-semibold transition ${
+                    active
+                      ? 'bg-[var(--surface-strong)] text-[var(--ink-invert)]'
+                      : 'text-[var(--muted)] hover:bg-[var(--surface-alt)]'
+                  }`}
+                  key={item.to}
+                  to={item.to}
+                >
+                  <item.icon size={16} aria-hidden />
+                  {item.label}
+                </NavLink>
+              );
+            })}
           </nav>
           <ThemeToggle />
         </div>

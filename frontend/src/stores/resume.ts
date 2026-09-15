@@ -3,6 +3,7 @@ import { EducationLevel, SkillCategory, SkillLevel } from '../types/enums';
 import { Resume, ResumeBasicInfo, ResumeSection, ResumeSectionType } from '../types/resume';
 import { createId } from '../utils/format';
 import { readStorage, storageKeys, writeStorage } from '../utils/storage';
+import { useJobStore } from './job';
 import { useTemplateStore } from './template';
 
 const defaultSections: ResumeSection[] = [
@@ -149,6 +150,8 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
       activeResumeId: clone.id,
     }));
     persist(get());
+    // 匹配关系随副本独立：按数组位置把指向源简历的证据绑定复制到副本
+    useJobStore.getState().duplicateBindingsForResume(source, clone);
     return clone.id;
   },
   deleteResume: (resumeId) => {
