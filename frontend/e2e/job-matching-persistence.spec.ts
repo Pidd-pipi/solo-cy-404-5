@@ -1,4 +1,4 @@
-import { Browser, BrowserContext, expect, test } from '@playwright/test';
+import { Browser, BrowserContext, Page, expect, test } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs';
 import {
   deleteFirstWorkExperience,
@@ -11,6 +11,18 @@ async function freshContext(browser: Browser): Promise<BrowserContext> {
   const context = await browser.newContext();
   context.setDefaultTimeout(15_000);
   return context;
+}
+
+/**
+ * 真实走页面「导入」：选择文件后，应用会异步读取→写入→location.reload()。
+ * 必须等到这次由导入触发的文档重载真正完成，否则后续导航会与 reload 撞车
+ * （干净上下文导入前也带种子简历，单看简历数量无法判断导入是否已落盘）。
+ */
+async function importBackupFile(page: Page, file: string): Promise<void> {
+  const reloaded = page.waitForEvent('framenavigated');
+  await page.getByTestId('import-file-input').setInputFiles(file);
+  await reloaded;
+  await page.waitForLoadState('load');
 }
 
 test.describe('岗位匹配中心：真实浏览器持久化 E2E', () => {
@@ -134,10 +146,10 @@ test.describe('岗位匹配中心：真实浏览器持久化 E2E', () => {
     const contextB = await freshContext(browser);
     const pageB = await contextB.newPage();
     await pageB.goto('/resumes');
-    // 真实选择备份文件上传：走与页面完全相同的解析 + 写入 + reload 路径
-    await pageB.getByTestId('import-file-input').setInputFiles(roundtripPath);
+    // 真实选择备份文件上传：走与页面完全相同的解析 + 写入 + reload 路径，并等待 reload 落定
+    await importBackupFile(pageB, roundtripPath);
 
-    // 简历保留（断言带自动重试，等待导入后的 reload 与重新渲染落定）
+    // 简历保留
     await expect(pageB.getByRole('link', { name: /编辑/ }).first()).toBeVisible();
 
     // 岗位与失联状态、覆盖率、检查进度一致
@@ -181,9 +193,9 @@ test.describe('岗位匹配中心：真实浏览器持久化 E2E', () => {
     const contextB = await freshContext(browser);
     const pageB = await contextB.newPage();
     await pageB.goto('/resumes');
-    await pageB.getByTestId('import-file-input').setInputFiles(oldBackupPath);
+    await importBackupFile(pageB, oldBackupPath);
 
-    // 简历一条不丢（断言自动重试，等待 reload 落定）
+    // 简历一条不丢
     await expect(pageB.getByRole('link', { name: /编辑/ })).toHaveCount(resumeCount);
 
     // 岗位匹配中心正常打开，只是空列表（无「查看匹配」入口）

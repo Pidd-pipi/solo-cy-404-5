@@ -44,7 +44,7 @@ npm run e2e       # Playwright + 真实 Chromium：关闭页面重开、整浏�
 ```
 
 - 单元/集成测试 `src/test/job-matching.test.ts`（13 类场景）：真实 localStorage 持久化，通过清空数据 + 重新加载 store 模块自行隔离，覆盖首次写入/刷新/重开、完整 JSON 备份往返、旧备份（缺少岗位数据）恢复且不丢简历、证据改名追踪、条目/来源简历移除失联、同名新条目不自动接管、复制简历后绑定独立、重复绑定去重、条目换序、投递前检查与覆盖率。
-- 端到端测试 `e2e/job-matching-persistence.spec.ts`：从真实页面入口写入岗位/要求/绑定/检查项，验证页面刷新、关闭页面重开、整浏览器重启（独立 BrowserContext + storageState）后覆盖率、失联状态与输入仍可回读；备份经真实「导出 JSON / 导入」文件往返；旧备份缺岗位数据时岗位为空、简历保留。运行前需 `npx playwright install chromium`。
+- 端到端测试 `e2e/job-matching-persistence.spec.ts`：从真实页面入口写入岗位/要求/绑定/检查项，验证页面刷新、关闭页面重开、整浏览器重启（独立 BrowserContext + storageState）后覆盖率、失联状态与输入仍可回读；备份经真实「导出 JSON / 导入」文件往返；旧备份缺岗位数据时岗位为空、简历保留。首次运行执行 `npx playwright install chromium` 安装浏览器；`npm run e2e` 会通过 `scripts/ensure-browser.mjs` 自检启动条件——浏览器缺失自动安装，系统库缺失在 Debian/Ubuntu 无 root 时自动用 `apt-get download` 补齐到用户缓存，无法补齐时打印可直接执行的命令。
 
 ## 技术栈
 
